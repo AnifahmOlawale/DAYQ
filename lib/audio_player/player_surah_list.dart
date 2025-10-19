@@ -1,0 +1,105 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quran_app/provider/player_provider.dart';
+import 'package:quran_app/provider/quran_csv_provider.dart';
+import 'package:quran_app/provider/theme_color_provider.dart';
+import 'package:quran_app/widget_tree/listwidget.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+class PlayerSurahList extends StatelessWidget {
+  final QuranCsv quranCsv;
+  final bool isSearch;
+  final bool playerListPage;
+  final ItemScrollController? listScrollController;
+  final bool isSearchControllerEmpty;
+  final void Function() onCardClick;
+  const PlayerSurahList({
+    super.key,
+    required this.quranCsv,
+    required this.isSearch,
+    required this.playerListPage,
+    required this.listScrollController,
+    required this.isSearchControllerEmpty,
+    required this.onCardClick,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final themeColorProvider = Provider.of<ThemeColor>(context);
+    final playerProvider = Provider.of<PlayerProvider>(context);
+    return Visibility(
+      //maintainState: true,
+      visible: playerListPage,
+      child: Scrollbar(
+        radius: Radius.circular(100),
+        child: Column(
+          children: [
+            Expanded(
+              child: ScrollablePositionedList.builder(
+                initialScrollIndex: playerProvider.currentPlayerIndex ?? 0,
+                itemScrollController: listScrollController,
+                itemCount: isSearch && isSearchControllerEmpty
+                    ? quranCsv.filterSurah.length
+                    : quranCsv.listOfSurahs.length,
+                itemBuilder: (context, index) {
+                  return surahListTile(
+                    context,
+                    themeColorProvider: themeColorProvider,
+                    cardColor:
+                        playerProvider.currentPlayerIndex == index && !isSearch
+                            ? themeColorProvider.selectedCardColour
+                            : themeColorProvider.card,
+                    selectedColour:
+                        playerProvider.currentPlayerIndex == index && !isSearch
+                            ? themeColorProvider.selectedTextColour
+                            : null,
+                    index: isSearch && isSearchControllerEmpty
+                        ? quranCsv.filterSurah.elementAt(index)[0]
+                        : quranCsv.listOfSurahs.elementAt(index)[0],
+                    title: isSearch && isSearchControllerEmpty
+                        ? quranCsv.filterSurah.elementAt(index)[1]
+                        : quranCsv.listOfSurahs.elementAt(index)[1],
+                    subTitle: isSearch && isSearchControllerEmpty
+                        ? quranCsv.filterSurah.elementAt(index)[3]
+                        : quranCsv.listOfSurahs.elementAt(index)[3],
+                    arabicName: isSearch && isSearchControllerEmpty
+                        ? quranCsv.filterSurah.elementAt(index)[2]
+                        : quranCsv.listOfSurahs.elementAt(index)[2],
+                    onCardClick: () {
+                      onCardClick();
+                      int openIndex = isSearch && isSearchControllerEmpty
+                          ? quranCsv.filterSurah.elementAt(index)[0]
+                          : quranCsv.listOfSurahs.elementAt(index)[0];
+
+                      if (openIndex - 1 != playerProvider.currentPlayerIndex) {
+                        //Save Clicked Index
+                        playerProvider.setCurrentPlayerIndex(
+                          index: openIndex - 1,
+                          currentPlayerArabicSurahName:
+                              isSearch && isSearchControllerEmpty
+                                  ? quranCsv.filterSurah.elementAt(index)[2]
+                                  : quranCsv.listOfSurahs.elementAt(index)[2],
+                          currentPlayerTransSurahName:
+                              isSearch && isSearchControllerEmpty
+                                  ? quranCsv.filterSurah.elementAt(index)[1]
+                                  : quranCsv.listOfSurahs.elementAt(index)[1],
+                        );
+
+                        //
+                        playerProvider.setLastPostion(position: Duration.zero);
+                        playerProvider.playCurrent();
+                        playerProvider.play();
+                      } else {
+                        playerProvider.resume();
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

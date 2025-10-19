@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "390513871881",
+    "firebase_url": "https://yankaba-29b1a-default-rtdb.firebaseio.com",
+    "project_id": "yankaba-29b1a",
+    "storage_bucket": "yankaba-29b1a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390513871881:android:a67168f0b18701aadebcd8",
+        "android_client_info": {
+          "package_name": "com.DAYQ.quran"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvpmXs9aEl77zv-xQVFissbL-gaLAmtBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
